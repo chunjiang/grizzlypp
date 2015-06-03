@@ -31,6 +31,7 @@ class Grizzly {
 		int read_as_int(unsigned char addr, int num);
 		void write_as_int(unsigned char addr, int val, int num);
 		void set_target(float setpoint);
+		float read_target(void);
 		void set_mode(char cmode, char dmode);
 		float read_current(void);
 		int read_encoder(void);

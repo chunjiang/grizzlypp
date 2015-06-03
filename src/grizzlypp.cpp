@@ -21,12 +21,11 @@ Grizzly::Grizzly(unsigned char dev_addr) {
 		}
 	}
 
-	dev = find_grizzly(ctx, dev_addr);
+	dev = grizzly_init(ctx, dev_addr);
 	all_dev[dev_cnt++] = dev;
 }
 
 Grizzly::~Grizzly() {
-	grizzly_exit(dev);
 }
 
 void Grizzly::write_registers(unsigned char addr, unsigned char* data, int num) {
@@ -55,6 +54,11 @@ void Grizzly::write_as_int(unsigned char addr, int val, int num) {
 
 void Grizzly::set_target(float setpoint) {
 	grizzly_set_target(dev, setpoint);
+}
+
+float Grizzly::read_target() {
+	int fixed_raw = grizzly_read_as_int(dev, ADDR_SPEED_RO, 4);
+	return fixed_to_float(fixed_raw);
 }
 
 void Grizzly::set_mode(char cmode, char dmode) {
@@ -98,7 +102,12 @@ void Grizzly::disable(void) {
 }
 
 int Grizzly::cleanup_all(int error) {
-	return grizzly_cleanup_all(ctx, all_dev, dev_cnt, error);
+	if (dev_cnt <= 0) {
+		return error;
+	}
+	int temp = dev_cnt;
+	dev_cnt = 0;
+	return grizzly_cleanup_all(ctx, all_dev, temp, error);
 }
 
 unsigned char Grizzly::addr_to_id(unsigned char addr) {

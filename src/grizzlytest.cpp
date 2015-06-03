@@ -11,13 +11,14 @@
 #include "grizzlypp.h"
 
 int main(void) {
+	printf("Testing grizzlypp\n");
 	Grizzly g(0x0f);
 	if (!g.enable()) {
 		printf("Failed to enable.\n");
 	}
 
 	g.set_mode(CMODE_NO_PID, DMODE_DRIVE_COAST);
-	g.set_target(0.);
+	g.set_target(0);
 
 	g.limit_acceleration(20);
 	g.limit_current(1);
@@ -29,20 +30,21 @@ int main(void) {
 
 	int s = 0;
 	while(1) {
-		g.set_target(s);
+		g.set_target(-s);
 
 		unsigned char mode = g.read_single_register(ADDR_MODE_RO);
 		float current = g.read_current();
 		int ticks = g.read_encoder();
-		int speed = g.read_as_int(ADDR_SPEED_RO, 4) / 65536;
+		int speed = g.read_target();
 		printf("Mode: %d, Speed: %d, Current: %f, Count: %d\n", mode, speed, current, ticks);
 
 		if (s >= 100) {
-			g.set_target(0.);
+			g.set_target(0);
 			return Grizzly::cleanup_all(0);
 		} else {
 			s += 5;
 		}
+		sleep(1);
 	}
 	return Grizzly::cleanup_all(0);
 }
