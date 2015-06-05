@@ -45,6 +45,7 @@ class Grizzly {
 		static int cleanup_all(int error);
 		static unsigned char addr_to_id(unsigned char addr);
 		static unsigned char id_to_addr(unsigned char id);
+		static int get_all_addr(unsigned char* addresses);
 };
 
 #endif /* GRIZZLYPP_H_ */

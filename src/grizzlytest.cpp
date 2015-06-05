@@ -12,6 +12,15 @@
 
 int main(void) {
 	printf("Testing grizzlypp\n");
+	unsigned char addresses[10];
+	int num_found = Grizzly::get_all_addr(addresses);
+
+	printf("Found: ");
+	for(int i = 0; i < num_found; i++) {
+		printf("%d ", addresses[i]);
+	}
+	printf("\n");
+
 	Grizzly g(0x0f);
 	if (!g.enable()) {
 		printf("Failed to enable.\n");

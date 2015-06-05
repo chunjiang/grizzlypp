@@ -5,6 +5,7 @@
  *      Author: felix
  */
 #include "grizzlypp.h"
+#include "libgrizzly.h"
 
 libusb_context* Grizzly::ctx = NULL;
 libusb_device_handle* Grizzly::all_dev[10];
@@ -116,4 +117,28 @@ unsigned char Grizzly::addr_to_id(unsigned char addr) {
 
 unsigned char Grizzly::id_to_addr(unsigned char id) {
 	return grizzly_id_to_addr(id);
+}
+
+int Grizzly::get_all_addr(unsigned char* addresses) {
+	if (ctx == NULL) {
+		int result = libusb_init(&ctx);
+		if (0 > result)
+		{
+			fprintf(stderr, "libusb_init() failed with %d.\n", result);
+			libusb_exit(ctx);
+			return result;
+		}
+	}
+
+	libusb_device_handle* found[10];
+	ssize_t num = get_all_grizzlies(ctx, found);
+	if (num < 0) {
+		return num;
+	}
+
+	for (int i = 0; i < num; i++) {
+		addresses[i] = grizzly_read_single_register(found[i], ADDR_ADDRESSLIST) >> 1;
+		grizzly_exit(found[i]);
+	}
+	return num;
 }
